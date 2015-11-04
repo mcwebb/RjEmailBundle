@@ -120,17 +120,6 @@ class EmailTemplateAdmin extends Admin
         ;
     }
 
-    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
-    {
-        if ('edit' == $action) {
-            $item = $this->menuFactory->createItem('send_test', array(
-                'uri' => 'javascript:void(send_test())',
-                'label' => 'Send test email',
-            ));
-            $menu->addChild($item);
-        }
-    }
-
     public function setTemplates(array $templates)
     {
         parent::setTemplates($templates);
