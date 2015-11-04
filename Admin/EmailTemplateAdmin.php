@@ -37,62 +37,59 @@ class EmailTemplateAdmin extends Admin
     //add
     protected function configureFormFields(FormMapper $formMapper)
     {
+
+        // pre-define form zoning
         $formMapper
-            ->with('Email Templates')
-                ->add('name')
+            ->tab('Primary')
+                ->with('Main', [
+                    'class' => 'col-md-4',
+                    'box_class' => 'box box-solid box-primary'
+                ])->end()
+                ->with('Content', [
+                    'class' => 'col-md-8',
+                    'box_class' => 'box box-warning'
+                ])->end()
+            ->end()
+            ->tab('Meta')
+                ->with('Email Origin')
+                ->end()
             ->end()
         ;
 
-        $locales = $this->locales;
+        $formMapper->tab('Primary')->with('Main')->add('name')->end()->end();
 
-        foreach ($locales as $locale) {
+        foreach ($this->locales as $locale) {
             $formMapper
-                ->with(sprintf("Subject", $locale))
-                    ->add(sprintf("translationProxies_%s_subject", $locale), 'text', array(
-                        'label' => $locale,
-                        'property_path' => sprintf('translationProxies[%s].subject', $locale),
-                    ))
+                ->tab('Primary')
+                    ->with('Main')
+                        ->add(sprintf("translationProxies_%s_subject", $locale), 'text', array(
+                            'label' => "Subject ($locale)",
+                            'property_path' => sprintf('translationProxies[%s].subject', $locale),
+                        ))
+                    ->end()
+                    ->with('Content')
+                        ->add(sprintf("translationProxies_%s_body", $locale), 'textarea', array(
+                            'label' => "Email Body ($locale)",
+                            'property_path' => sprintf('translationProxies[%s].body', $locale),
+                            'attr' => array(
+                                'rows' => 12
+                            )
+                        ))
+                    ->end()
                 ->end()
-            ;
-        }
-
-        foreach ($locales as $locale) {
-            $formMapper
-                ->with(sprintf("Text body", $locale))
-                    ->add(sprintf("translationProxies_%s_body", $locale), 'textarea', array(
-                        'label' => $locale,
-                        'property_path' => sprintf('translationProxies[%s].body', $locale),
-                    ))
-                ->end()
-                ->with(sprintf("Html body", $locale))
-                    ->add(sprintf("translationProxies_%s_body_html", $locale), 'textarea', array(
-                        'label' => $locale,
-                        'property_path' => sprintf('translationProxies[%s].bodyHtml', $locale),
-                    ))
-                ->end()
-            ;
-        }
-
-        foreach ($locales as $locale) {
-            $formMapper
-                ->with(sprintf("From name", $locale))
-                    ->add(sprintf("translationProxies_%s_fromName", $locale), 'text', array(
-                        'label' => $locale,
-                        'property_path' => sprintf('translationProxies[%s].fromName', $locale),
-                        'required' => false,
-                    ))
-                ->end()
-            ;
-        }
-
-        foreach ($locales as $locale) {
-            $formMapper
-                ->with(sprintf("From email", $locale))
-                    ->add(sprintf("translationProxies_%s_fromEmail", $locale), 'email', array(
-                        'label' => $locale,
-                        'property_path' => sprintf('translationProxies[%s].fromEmail', $locale),
-                        'required' => false,
-                    ))
+                ->tab('Meta')
+                    ->with('Email Origin')
+                        ->add(sprintf("translationProxies_%s_fromName", $locale), 'text', array(
+                            'label' => "From Name ($locale)",
+                            'property_path' => sprintf('translationProxies[%s].fromName', $locale),
+                            'required' => false,
+                        ))
+                        ->add(sprintf("translationProxies_%s_fromEmail", $locale), 'email', array(
+                            'label' => "From Email Address ($locale)",
+                            'property_path' => sprintf('translationProxies[%s].fromEmail', $locale),
+                            'required' => false,
+                        ))
+                    ->end()
                 ->end()
             ;
         }
@@ -102,15 +99,12 @@ class EmailTemplateAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('id')
             ->addIdentifier('name')
-            ->addIdentifier('createdAt')
-            ->addIdentifier('updatedAt')
+            ->add('updatedAt')
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'show' => array(),
                     'edit' => array(),
-                    'delete' => array(),
                 )
             ))
         ;
