@@ -34,12 +34,12 @@ class EmailTemplateManager
         $this->cache = array();
     }
 
-    public function findTemplateByName($name)
+    private function findTemplateByName($name)
     {
         return $this->repository->findOneBy(array('name' => $name));
     }
 
-    public function renderTemplate($templateName, $locale, $part, $vars)
+    private function renderTemplate($templateName, $locale, $part, $vars)
     {
         $name = "email_template:$templateName:$locale:$part";
         $vars['locale'] = $locale;
@@ -47,7 +47,7 @@ class EmailTemplateManager
         return $this->container->get('rj_email.twig')->render($name, $vars);
     }
 
-    public function renderFromEmailTemplate(EmailTemplate $template, $locale = null, $vars = array(), Message $message = null)
+    private function renderFromEmailTemplate(EmailTemplate $template, $locale = null, $vars = array(), Message $message = null)
     {
         if (!$locale) {
             $locale = $this->container->getParameter('rj_email.default_locale');
@@ -100,6 +100,14 @@ class EmailTemplateManager
         return $vars;
     }
 
+    /**
+     * @param string $templateName
+     * @param string|null $locale
+     * @param array $vars
+     * @param Message|null $message
+     *
+     * @return array
+     */
     public function renderEmail($templateName, $locale = null, $vars = array(), Message $message = null)
     {
         if (!$template = $this->getTemplate($templateName)) {

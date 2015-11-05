@@ -31,37 +31,6 @@ class EmailTemplateManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->repository));
     }
 
-    public function testFindTemplateByName()
-    {
-        $emailTemplate = $this->getMock('FOS\EmailBundle\Entity\EmailTemplate');
-
-        $criteria = array('name' => 'test');
-        $this->repository->expects($this->once())
-                ->method('findOneBy')
-                ->with($criteria)
-                ->will($this->returnValue($emailTemplate));
-
-        $manager = new EmailTemplateManager($this->em, $this->repository, $this->twig);
-        $result = $manager->findTemplateByName('test');
-
-        $this->assertEquals($result, $emailTemplate);
-    }
-
-    public function testRenderTemplate()
-    {
-        $locale = "en_US";
-        $emailTemplate = new EmailTemplate();
-        $emailTemplate->setName('test');
-        $emailTemplate->translate('en')->setBody("Hello {#name}");
-        $this->em->persist($emailTemplate);
-        $this->em->flush();
-
-        $manager = new EmailTemplateManager($this->em, $this->repository, $this->twig);
-        $html = $manager->renderTemplate('test', $locale, 'body', array('name' => 'Jeremy'));
-        //$this->assertTrue(is_array($html));
-        //$this->assertEquals($html->getBody(), 'Hello Jeremy');
-    }
-
     public function testGetTemplate()
     {
         $emailTemplate = $this->getMock('FOS\EmailBundle\Entity\EmailTemplate');
