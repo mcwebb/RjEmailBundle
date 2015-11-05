@@ -18,12 +18,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode('default_locale')->defaultValue('en')->end()
+            ->scalarNode('layout')->defaultValue(':email:standard_layout.html.twig')->end()
             ->scalarNode('default_from_name')->defaultValue('ACME Corporation')->end()
             ->scalarNode('default_from_email')->defaultValue('acme@example.com')->end()
             ->arrayNode('locales')
                 ->isRequired()
-                ->prototype('scalar')->end()
-            ;
+                ->prototype('scalar')
+            ->end()
+        ;
 
         $this->addEmailsSection($rootNode);
         return $treeBuilder;

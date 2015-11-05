@@ -11,9 +11,10 @@ class EmailTemplateLoader implements \Twig_LoaderInterface
 {
     private $manager;
 
-    public function __construct(EmailTemplateManager $manager)
+    public function __construct(EmailTemplateManager $manager, $layoutName)
     {
         $this->manager = $manager;
+        $this->layoutName = $layoutName;
     }
 
     /**
@@ -112,14 +113,24 @@ class EmailTemplateLoader implements \Twig_LoaderInterface
         }
 
         switch ($part) {
-        case 'subject':
-            return '{% autoescape false %}' . $translation->getSubject() . '{% endautoescape %}';
-        case 'body':
-            return $translation->getBody();
-        case 'bodyHtml':
-            return $translation->getBodyHtml();
-        default:
-            throw new \Twig_Error_Loader(sprintf("Invalid template part %s", $part));
+            case 'subject':
+                return '{% autoescape false %}' . $translation->getSubject() . '{% endautoescape %}';
+            case 'body':
+                return $translation->getBody();
+            case 'bodyHtml':
+                return $this->getDecoratedHtmlBody($translation->getBody());
+            default:
+                throw new \Twig_Error_Loader(sprintf("Invalid template part %s", $part));
         }
+    }
+
+    private function getDecoratedHtmlBody($textBody)
+    {
+        $source = "{% extends '{$this->layoutName}' %}\n";
+        $source .= "{% block content %}\n";
+        $source .= nl2br($textBody);
+        $source .= "\n{% endblock %}";
+
+        return $source;
     }
 }
