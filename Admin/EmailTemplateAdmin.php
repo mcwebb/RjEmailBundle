@@ -14,8 +14,8 @@ use Sonata\AdminBundle\Route\RouteCollection;
 
 class EmailTemplateAdmin extends Admin
 {
-    protected $baseRouteName = 'email_template';
-    protected $baseRoutePattern = 'email_template';
+    protected $baseRouteName = 'admin_rj_email';
+    protected $baseRoutePattern = 'rj/email';
     protected $locales;
 
     public function setLocales(array $locales)

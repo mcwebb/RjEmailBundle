@@ -86,7 +86,7 @@ class EmailTemplateAdminController extends CRUDController
 
         $message = new Message;
 
-        $ret = $manager->renderFromEmailTemplate($template, $language, $vars, $message);
+        $ret = $manager->renderEmail($template, $language, $vars, $message);
 
         $message
             ->setFrom($ret['fromEmail'], $ret['fromName'])
