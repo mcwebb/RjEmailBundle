@@ -51,7 +51,7 @@
         <service id="rj_email.message_send_listener" class="Rj\EmailBundle\Swift\Events\SendListener\MessageSendListener">
             <argument type="service" id="rj_email.sent_email_manager" />
             
-            <tag name="swiftmailer.plugin" alias="swifmailer_plugin" />
+            <tag name="swiftmailer.default.plugin" alias="rj_email.sent_listener" />
         </service>
 
         <service id="rj_email.form.type.send_email" class="Rj\EmailBundle\Form\Type\SendEmailType">
