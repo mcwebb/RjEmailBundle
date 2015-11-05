@@ -2,6 +2,7 @@
 
 namespace Rj\EmailBundle\Mailer;
 
+use Rj\EmailBundle\Swift\MessageFactory;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Routing\RouterInterface;
 use FOS\UserBundle\Model\UserInterface;
@@ -19,11 +20,12 @@ class TwigSwiftMailer implements MailerInterface
     protected $parameters;
     protected $manager;
 
-    public function __construct($mailer, RouterInterface $router, EmailTemplateManager $manager, array $parameters)
+    public function __construct($mailer, RouterInterface $router, EmailTemplateManager $manager, MessageFactory $factory, array $parameters)
     {
         $this->mailer     = $mailer;
         $this->router     = $router;
         $this->manager    = $manager;
+        $this->factory    = $factory;
         $this->parameters = $parameters;
     }
 
@@ -32,13 +34,14 @@ class TwigSwiftMailer implements MailerInterface
         $template = $this->parameters['template']['confirmation'];
         $url = $this->router->generate('fos_user_registration_confirm', array('token' => $user->getConfirmationToken()), true);
 
-        $message = Message::newInstance();
-        $rendered = $this->manager->renderEmail($template, null, array(
+        $message = $this->factory->generate($template, null, array(
             'username' => $user->getUsername(),
             'confirmationUrl' =>  $url,
-        ), $message);
+        ));
 
-        $this->sendEmailMessage($rendered, $this->parameters['from_email']['confirmation'], $user->getEmail(), $message);
+        $message->setTo($user->getEmail());
+
+        $this->mailer->send($message);
     }
 
     public function sendResettingEmailMessage(UserInterface $user)
@@ -46,35 +49,12 @@ class TwigSwiftMailer implements MailerInterface
         $template = $this->parameters['template']['resetting'];
         $url = $this->router->generate('fos_user_resetting_reset', array('token' => $user->getConfirmationToken()), true);
 
-        $message = Message::newInstance();
-        $rendered = $this->manager->renderEmail($template, null, array(
+        $message = $this->factory->generate($template, null, array(
             'username' => $user->getUsername(),
-            'confirmationUrl' => $url,
-        ), $message);
+            'confirmationUrl' =>  $url,
+        ));
 
-        $this->sendEmailMessage($rendered, $this->parameters['from_email']['resetting'], $user->getEmail(), $message);
-    }
-
-    protected function sendEmailMessage($renderedTemplate, $fromEmail, $toEmail, $message = null)
-    {
-        if (!$message) {
-            $message = new Message();
-        }
-
-        $message
-            ->setSubject($renderedTemplate['subject'])
-            ->setFrom($fromEmail)
-            ->setTo($toEmail)
-        ;
-
-        if (array_key_exists('body', $renderedTemplate)) {
-            $message->setBody($renderedTemplate['body'], 'text/plain');
-            if (array_key_exists('bodyHtml', $renderedTemplate)) {
-                $message->addPart($renderedTemplate['bodyHtml'], 'text/html');
-            }
-        } else if (array_key_exists('bodyHtml', $renderedTemplate)) {
-            $message->setBody($renderedTemplate['bodyHtml'], 'text/html');
-        }
+        $message->setTo($user->getEmail());
 
         $this->mailer->send($message);
     }

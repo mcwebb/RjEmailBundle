@@ -25,6 +25,11 @@
             <argument>%rj_email.default_from_email%</argument>
         </service>
 
+        <service id="rj_email.message_factory" class="Rj\EmailBundle\Swift\MessageFactory">
+            <argument id="rj_email.email_template_manager" type="service" />
+        </service>
+
+
         <service id="rj_email.twig" class="%twig.class%" parent="twig">
             <call method="setLoader">
                 <argument type="service" id="rj_email.twig.loader" />

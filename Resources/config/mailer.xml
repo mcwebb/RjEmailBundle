@@ -8,6 +8,7 @@
             <argument type="service" id="mailer" />
             <argument type="service" id="router" />
             <argument type="service" id="rj_email.email_template_manager" />
+            <argument type="service" id="rj_email.message_factory" />
             <argument type="collection">
                 <argument key="template" type="collection">
                     <argument key="confirmation">%fos_user.registration.confirmation.template%</argument>
